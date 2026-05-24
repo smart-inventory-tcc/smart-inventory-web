@@ -2,9 +2,9 @@ substitutions:
   _REGION: asia-southeast2
   _AR_REPO: smart-inventory
   _SERVICE_NAME: smart-inventory-web
-  _VITE_IDENTITY_API_URL: ''
-  _VITE_INVENTORY_API_URL: ''
-  _VITE_INTELLIGENCE_API_URL: ''
+  _VITE_IDENTITY_API_URL: ""
+  _VITE_INVENTORY_API_URL: ""
+  _VITE_INTELLIGENCE_API_URL: ""
 
 steps:
   - id: Ensure Artifact Registry repository
@@ -24,6 +24,8 @@ steps:
     name: gcr.io/cloud-builders/docker
     args:
       - build
+      - -f
+      - smart-inventory-web/Dockerfile
       - --tag
       - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA
       - --tag
@@ -34,7 +36,7 @@ steps:
       - VITE_INVENTORY_API_URL=${_VITE_INVENTORY_API_URL}
       - --build-arg
       - VITE_INTELLIGENCE_API_URL=${_VITE_INTELLIGENCE_API_URL}
-      - .
+      - smart-inventory-web
 
   - id: Push commit image
     name: gcr.io/cloud-builders/docker
@@ -48,22 +50,15 @@ steps:
       - push
       - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:latest
 
-  - id: Deploy to Cloud Run
+  - id: Deploy to App Engine Flexible
     name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    entrypoint: gcloud
+    entrypoint: bash
     args:
-      - run
-      - deploy
-      - ${_SERVICE_NAME}
-      - --image
-      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA
-      - --region
-      - ${_REGION}
-      - --platform
-      - managed
-      - --allow-unauthenticated
-      - --port
-      - '8080'
+      - -c
+      - |
+        gcloud app deploy smart-inventory-web/app.yaml \
+          --image-url=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA \
+          --quiet
 
 images:
   - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA

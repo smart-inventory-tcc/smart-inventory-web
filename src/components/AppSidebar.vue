@@ -23,7 +23,7 @@ function handleLogout() {
       <RouterLink to="/suppliers">Supplier</RouterLink>
       <RouterLink to="/items">Barang</RouterLink>
       <RouterLink to="/categories">Kategori</RouterLink>
-      <RouterLink v-if="auth.user?.role === 'OWNER'" to="/accounts">Akun</RouterLink>
+      <RouterLink v-if="auth.user?.role === 'OWNER'" to="/accounts">Manajemen Akun</RouterLink>
       <RouterLink to="/audit">Audit Report</RouterLink>
     </nav>
 
