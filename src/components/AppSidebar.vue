@@ -1,8 +1,14 @@
 <script setup>
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
+const router = useRouter()
+
+function handleLogout() {
+  auth.logout()
+  router.replace('/login')
+}
 </script>
 
 <template>
@@ -23,7 +29,7 @@ const auth = useAuthStore()
     <footer>
       <strong>{{ auth.user?.username }}</strong>
       <span>{{ auth.user?.role }}</span>
-      <button type="button" @click="auth.logout()">Keluar</button>
+      <button type="button" @click="handleLogout">Keluar</button>
     </footer>
   </aside>
 </template>
