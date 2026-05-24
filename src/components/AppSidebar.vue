@@ -17,7 +17,6 @@ const auth = useAuthStore()
       <RouterLink to="/suppliers">Supplier</RouterLink>
       <RouterLink to="/items">Barang</RouterLink>
       <RouterLink to="/categories">Kategori</RouterLink>
-      <RouterLink to="/transactions">Transaksi</RouterLink>
       <RouterLink to="/audit">Audit Report</RouterLink>
     </nav>
 
