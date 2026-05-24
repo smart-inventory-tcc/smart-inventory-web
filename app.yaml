@@ -1,5 +1,5 @@
 service: smart-inventory-web
-runtime: nodejs20
+runtime: nodejs24
 
 env_variables:
   NODE_ENV: "production"
