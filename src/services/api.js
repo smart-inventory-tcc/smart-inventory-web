@@ -154,12 +154,12 @@ export const authApi = {
 
 export const userApi = {
   async list() {
-    const data = await request('identity', '/user')
+    const data = await request('identity', '/users')
     return data.map(normalizeUser)
   },
   async create(body) {
     return normalizeUser(
-      await request('identity', '/user', {
+      await request('identity', '/users', {
         method: 'POST',
         body: JSON.stringify(body),
       }),
@@ -167,14 +167,14 @@ export const userApi = {
   },
   async updatePassword(id, password) {
     return normalizeUser(
-      await request('identity', `/user/${id}/password`, {
+      await request('identity', `/users/${id}/password`, {
         method: 'PUT',
         body: JSON.stringify({ password }),
       }),
     )
   },
   remove: (id) =>
-    request('identity', `/user/${id}`, {
+    request('identity', `/users/${id}`, {
       method: 'DELETE',
     }),
 }
