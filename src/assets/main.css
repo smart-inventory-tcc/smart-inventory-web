@@ -12,8 +12,8 @@
 
 .sidebar {
   padding: 2rem;
-  background: #0d2a22;
-  color: #f7fbf9;
+  background: var(--primary);
+  color: var(--surface);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -33,7 +33,7 @@
 }
 
 .sidebar a {
-  color: rgba(247, 251, 249, 0.78);
+  color: rgba(255, 255, 255, 0.84);
   text-decoration: none;
   padding: 0.8rem 1rem;
   border-radius: 1rem;
@@ -41,7 +41,7 @@
 
 .sidebar a.router-link-exact-active {
   background: rgba(255, 255, 255, 0.12);
-  color: #fff;
+  color: var(--surface);
 }
 
 .sidebar footer {
@@ -50,7 +50,7 @@
 }
 
 .sidebar footer span {
-  color: rgba(247, 251, 249, 0.65);
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .sidebar footer button {
@@ -68,7 +68,7 @@
 
 .eyebrow {
   margin: 0 0 0.35rem;
-  color: var(--brand);
+  color: var(--secondary);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -76,7 +76,7 @@
 }
 
 .sidebar .eyebrow {
-  color: rgba(247, 251, 249, 0.62);
+  color: var(--card);
 }
 
 .muted {
@@ -161,7 +161,7 @@ button {
   border: 0;
   border-radius: 0.8rem;
   padding: 0.8rem 1rem;
-  color: #fff;
+  color: var(--surface);
   background: var(--brand);
   cursor: pointer;
 }
@@ -171,7 +171,7 @@ button:hover {
 }
 
 .secondary {
-  background: #dfe9e4;
+  background: var(--card);
   color: var(--ink);
 }
 
@@ -223,11 +223,12 @@ th {
 .alert-card {
   border-radius: 1rem;
   padding: 1rem;
-  background: #fffbeb;
+  background: var(--card);
 }
 
 .alert-card.danger {
-  background: #fef3f2;
+  background: var(--card);
+  border: 1px solid var(--danger);
 }
 
 .alert-card p {
@@ -242,13 +243,13 @@ th {
 }
 
 .badge.in {
-  color: var(--brand-dark);
-  background: #dcfae6;
+  color: var(--surface);
+  background: var(--primary);
 }
 
 .badge.out {
-  color: var(--warning);
-  background: #ffead5;
+  color: var(--surface);
+  background: var(--secondary);
 }
 
 .feedback {
@@ -259,12 +260,12 @@ th {
 
 .feedback.error {
   color: var(--danger);
-  background: #fef3f2;
+  background: var(--card);
 }
 
 .feedback.success {
-  color: var(--brand-dark);
-  background: #dcfae6;
+  color: var(--primary);
+  background: var(--card);
 }
 
 .auth-page {
@@ -282,12 +283,12 @@ th {
 .text-button {
   margin-top: 1rem;
   width: 100%;
-  color: var(--brand-dark);
+  color: var(--secondary);
   background: transparent;
 }
 
 .text-button:hover {
-  background: rgba(20, 121, 92, 0.08);
+  background: var(--card);
 }
 
 @media (max-width: 960px) {

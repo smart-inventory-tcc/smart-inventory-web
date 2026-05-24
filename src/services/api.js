@@ -61,7 +61,19 @@ function normalizeSupplier(supplier) {
   }
 }
 
+function normalizeCategory(category) {
+  return {
+    id: category.id,
+    name: category.name ?? category.categoryName ?? category.category_name ?? '',
+    description: category.description ?? '',
+    itemCount: category.itemCount ?? category.item_count ?? category._count?.items ?? 0,
+    createdAt: category.createdAt ?? category.created_at ?? null,
+  }
+}
+
 function normalizeItem(item) {
+  const category = item.category ?? null
+
   return {
     id: item.id,
     barcode: item.barcode,
@@ -70,6 +82,12 @@ function normalizeItem(item) {
     stock: Number(item.stock ?? 0),
     minStock: Number(item.minStock ?? item.min_stock ?? 0),
     categoryId: item.categoryId ?? item.category_id ?? null,
+    categoryName:
+      item.categoryName ??
+      item.category_name ??
+      category?.categoryName ??
+      category?.category_name ??
+      null,
     supplierId: item.supplierId ?? item.supplier_id ?? null,
     imageUrl: item.imageUrl ?? item.image_url ?? null,
     isActive: item.isActive ?? true,
@@ -101,6 +119,7 @@ function toItemPayload(body) {
     category_id: body.categoryId,
     supplier_id: body.supplierId,
     image_url: body.imageUrl,
+    image_file: body.imageFile,
   }
 }
 
@@ -150,6 +169,39 @@ export const supplierApi = {
       }),
     )
   },
+}
+
+export const categoryApi = {
+  async list() {
+    const data = await request('inventory', '/categories')
+    return data.map(normalizeCategory)
+  },
+  async create(body) {
+    return normalizeCategory(
+      await request('inventory', '/categories', {
+        method: 'POST',
+        body: JSON.stringify({
+          categoryName: body.name,
+          description: body.description,
+        }),
+      }),
+    )
+  },
+  async update(id, body) {
+    return normalizeCategory(
+      await request('inventory', `/categories/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          categoryName: body.name,
+          description: body.description,
+        }),
+      }),
+    )
+  },
+  remove: (id) =>
+    request('inventory', `/categories/${id}`, {
+      method: 'DELETE',
+    }),
 }
 
 export const itemApi = {
