@@ -89,6 +89,7 @@ function normalizeItem(item) {
       category?.category_name ??
       null,
     supplierId: item.supplierId ?? item.supplier_id ?? null,
+    supplierName: item.supplierName ?? item.supplier_name ?? item.supplier?.name ?? null,
     imageUrl: item.imageUrl ?? item.image_url ?? null,
     isActive: item.isActive ?? true,
   }
