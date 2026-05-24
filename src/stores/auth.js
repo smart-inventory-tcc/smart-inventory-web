@@ -20,9 +20,6 @@ export const useAuthStore = defineStore('auth', {
       localStorage.setItem(tokenKey, data.token)
       localStorage.setItem(userKey, JSON.stringify(data.user))
     },
-    async register(payload) {
-      return authApi.register(payload)
-    },
     async refreshProfile() {
       this.user = await authApi.profile()
       localStorage.setItem(userKey, JSON.stringify(this.user))

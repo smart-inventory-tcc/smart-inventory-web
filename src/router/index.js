@@ -35,6 +35,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/accounts',
+      name: 'accounts',
+      component: () => import('../views/AccountsView.vue'),
+      meta: { requiresAuth: true, requiresOwner: true },
+    },
+    {
       path: '/audit',
       name: 'audit',
       component: () => import('../views/AuditView.vue'),
@@ -50,6 +56,9 @@ router.beforeEach((to) => {
   }
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
     return '/login'
+  }
+  if (to.meta.requiresOwner && auth.user?.role !== 'OWNER') {
+    return '/'
   }
   if (to.path === '/login' && auth.isAuthenticated) {
     return '/'

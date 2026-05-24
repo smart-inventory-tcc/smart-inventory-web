@@ -32,7 +32,17 @@ async function request(service, path, options = {}) {
       localStorage.removeItem('smart_inventory_token')
       localStorage.removeItem('smart_inventory_user')
     }
-    throw new Error(payload.message || payload.error || 'Terjadi kesalahan pada server')
+    const message = payload.message || payload.error
+
+    if (message) {
+      throw new Error(message)
+    }
+
+    if (response.status === 404) {
+      throw new Error(`Endpoint ${path} belum tersedia di ${baseUrlFor(service)}`)
+    }
+
+    throw new Error(`Terjadi kesalahan pada server (${response.status})`)
   }
 
   return payload.data ?? payload
@@ -127,13 +137,6 @@ function toItemPayload(body) {
 export const apiMode = isLegacyApi ? 'legacy' : 'microservices'
 
 export const authApi = {
-  async register(body) {
-    const data = await request('identity', '/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(body),
-    })
-    return normalizeUser(data)
-  },
   async login(body) {
     const data = await request('identity', '/auth/login', {
       method: 'POST',
@@ -147,6 +150,33 @@ export const authApi = {
   async profile() {
     return normalizeUser(await request('identity', '/auth/profile'))
   },
+}
+
+export const userApi = {
+  async list() {
+    const data = await request('identity', '/users')
+    return data.map(normalizeUser)
+  },
+  async create(body) {
+    return normalizeUser(
+      await request('identity', '/users', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    )
+  },
+  async updatePassword(id, password) {
+    return normalizeUser(
+      await request('identity', `/users/${id}/password`, {
+        method: 'PUT',
+        body: JSON.stringify({ password }),
+      }),
+    )
+  },
+  remove: (id) =>
+    request('identity', `/users/${id}`, {
+      method: 'DELETE',
+    }),
 }
 
 export const supplierApi = {
