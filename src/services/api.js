@@ -48,15 +48,15 @@ async function request(service, path, options = {}) {
   return payload.data ?? payload
 }
 
-function normalizeUser(user) {
-  if (!user) return user
+function normalizeUser(users) {
+  if (!users) return users
   return {
-    id: user.id,
+    id: users.id,
     username: user.username,
-    role: user.role,
-    name: user.name ?? null,
-    email: user.email ?? null,
-    createdAt: user.createdAt ?? user.created_at ?? null,
+    role: users.role,
+    name: users.name ?? null,
+    email: users.email ?? null,
+    createdAt: users.createdAt ?? users.created_at ?? null,
   }
 }
 
@@ -154,12 +154,12 @@ export const authApi = {
 
 export const userApi = {
   async list() {
-    const data = await request('identity', '/users')
+    const data = await request('identity', '/user')
     return data.map(normalizeUser)
   },
   async create(body) {
     return normalizeUser(
-      await request('identity', '/users', {
+      await request('identity', '/user', {
         method: 'POST',
         body: JSON.stringify(body),
       }),
@@ -167,14 +167,14 @@ export const userApi = {
   },
   async updatePassword(id, password) {
     return normalizeUser(
-      await request('identity', `/users/${id}/password`, {
+      await request('identity', `/user/${id}/password`, {
         method: 'PUT',
         body: JSON.stringify({ password }),
       }),
     )
   },
   remove: (id) =>
-    request('identity', `/users/${id}`, {
+    request('identity', `/user/${id}`, {
       method: 'DELETE',
     }),
 }
