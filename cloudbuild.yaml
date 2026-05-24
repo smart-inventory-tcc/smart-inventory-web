@@ -1,0 +1,61 @@
+substitutions:
+  _REGION: asia-southeast2
+  _AR_REPO: smart-inventory
+  _SERVICE_NAME: smart-inventory-web
+  _VITE_IDENTITY_API_URL: ''
+  _VITE_INVENTORY_API_URL: ''
+  _VITE_INTELLIGENCE_API_URL: ''
+
+steps:
+  - id: Build web image
+    name: gcr.io/cloud-builders/docker
+    dir: smart-inventory-web
+    args:
+      - build
+      - --tag
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA
+      - --tag
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:latest
+      - --build-arg
+      - VITE_IDENTITY_API_URL=${_VITE_IDENTITY_API_URL}
+      - --build-arg
+      - VITE_INVENTORY_API_URL=${_VITE_INVENTORY_API_URL}
+      - --build-arg
+      - VITE_INTELLIGENCE_API_URL=${_VITE_INTELLIGENCE_API_URL}
+      - .
+
+  - id: Push commit image
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA
+
+  - id: Push latest image
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:latest
+
+  - id: Deploy to Cloud Run
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE_NAME}
+      - --image
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA
+      - --region
+      - ${_REGION}
+      - --platform
+      - managed
+      - --allow-unauthenticated
+      - --port
+      - '8080'
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:latest
+
+options:
+  logging: CLOUD_LOGGING_ONLY
