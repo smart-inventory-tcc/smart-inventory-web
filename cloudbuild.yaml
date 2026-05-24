@@ -4,6 +4,18 @@ substitutions:
   _VITE_INTELLIGENCE_API_URL: ""
 
 steps:
+  - id: Build static bundle
+    name: node:18
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        export VITE_IDENTITY_API_URL="${_VITE_IDENTITY_API_URL}"
+        export VITE_INVENTORY_API_URL="${_VITE_INVENTORY_API_URL}"
+        export VITE_INTELLIGENCE_API_URL="${_VITE_INTELLIGENCE_API_URL}"
+        npm ci
+        npm run build
+
   - id: Deploy to App Engine Standard
     name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     entrypoint: bash

@@ -1,6 +1,17 @@
 service: smart-inventory-web
-runtime: custom
-env: standard
+runtime: nodejs18
 
 env_variables:
   NODE_ENV: "production"
+
+automatic_scaling:
+  max_instances: 3
+
+handlers:
+  - url: /(.*\.(js|css|png|jpg|svg|ico|json))$
+    static_files: dist/\1
+    upload: dist/.*\.(js|css|png|jpg|svg|ico|json)$
+
+  - url: /.*
+    static_files: dist/index.html
+    upload: dist/index.html
