@@ -25,7 +25,7 @@ steps:
     args:
       - build
       - -f
-      - smart-inventory-web/Dockerfile
+      - Dockerfile
       - --tag
       - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA
       - --tag
@@ -36,7 +36,7 @@ steps:
       - VITE_INVENTORY_API_URL=${_VITE_INVENTORY_API_URL}
       - --build-arg
       - VITE_INTELLIGENCE_API_URL=${_VITE_INTELLIGENCE_API_URL}
-      - smart-inventory-web
+      - .
 
   - id: Push commit image
     name: gcr.io/cloud-builders/docker
@@ -56,7 +56,7 @@ steps:
     args:
       - -c
       - |
-        gcloud app deploy smart-inventory-web/app.yaml \
+        gcloud app deploy app.yaml \
           --image-url=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA \
           --quiet
 
