@@ -1,68 +1,17 @@
 substitutions:
-  _REGION: asia-southeast2
-  _AR_REPO: smart-inventory
-  _SERVICE_NAME: smart-inventory-web
   _VITE_IDENTITY_API_URL: ""
   _VITE_INVENTORY_API_URL: ""
   _VITE_INTELLIGENCE_API_URL: ""
 
 steps:
-  - id: Ensure Artifact Registry repository
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        gcloud artifacts repositories describe "${_AR_REPO}" \
-          --location="${_REGION}" \
-        || gcloud artifacts repositories create "${_AR_REPO}" \
-          --repository-format=docker \
-          --location="${_REGION}" \
-          --description="Docker images for Smart Inventory"
-
-  - id: Build web image
-    name: gcr.io/cloud-builders/docker
-    args:
-      - build
-      - -f
-      - Dockerfile
-      - --tag
-      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA
-      - --tag
-      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:latest
-      - --build-arg
-      - VITE_IDENTITY_API_URL=${_VITE_IDENTITY_API_URL}
-      - --build-arg
-      - VITE_INVENTORY_API_URL=${_VITE_INVENTORY_API_URL}
-      - --build-arg
-      - VITE_INTELLIGENCE_API_URL=${_VITE_INTELLIGENCE_API_URL}
-      - .
-
-  - id: Push commit image
-    name: gcr.io/cloud-builders/docker
-    args:
-      - push
-      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA
-
-  - id: Push latest image
-    name: gcr.io/cloud-builders/docker
-    args:
-      - push
-      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:latest
-
-  - id: Deploy to App Engine Flexible
+  - id: Deploy to App Engine Standard
     name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     entrypoint: bash
     args:
       - -c
       - |
         gcloud app deploy app.yaml \
-          --image-url=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA \
           --quiet
-
-images:
-  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:$COMMIT_SHA
-  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE_NAME}:latest
 
 options:
   logging: CLOUD_LOGGING_ONLY

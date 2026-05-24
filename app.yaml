@@ -1,17 +1,6 @@
 service: smart-inventory-web
 runtime: custom
-env: flex
+env: standard
 
 env_variables:
   NODE_ENV: "production"
-
-automatic_scaling:
-  min_num_instances: 1
-  max_num_instances: 3
-  
-health_check:
-  enable_health_check: true
-  check_interval_sec: 30
-  timeout_sec: 4
-  unhealthy_threshold: 3
-  healthy_threshold: 2
