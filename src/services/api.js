@@ -48,15 +48,15 @@ async function request(service, path, options = {}) {
   return payload.data ?? payload
 }
 
-function normalizeUser(users) {
-  if (!users) return users
+function normalizeUser(user) {
+  if (!user) return user
   return {
-    id: users.id,
+    id: user.id,
     username: user.username,
-    role: users.role,
-    name: users.name ?? null,
-    email: users.email ?? null,
-    createdAt: users.createdAt ?? users.created_at ?? null,
+    role: user.role,
+    name: user.name ?? null,
+    email: user.email ?? null,
+    createdAt: user.createdAt ?? user.created_at ?? null,
   }
 }
 
