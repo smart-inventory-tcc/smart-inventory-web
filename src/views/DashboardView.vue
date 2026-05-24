@@ -1,9 +1,10 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { analyticsApi, itemApi, transactionApi } from '@/services/api'
+import { analyticsApi, categoryApi, itemApi, transactionApi } from '@/services/api'
 
 const summary = ref(null)
 const items = ref([])
+const categories = ref([])
 const transactions = ref([])
 const loading = ref(true)
 const error = ref('')
@@ -66,11 +67,19 @@ const netMovement = computed(
 const linkedSupplierCount = computed(
   () => new Set(activeItems.value.map((item) => item.supplierId).filter(Boolean)).size,
 )
-const categoryCount = computed(
-  () =>
-    new Set(activeItems.value.map((item) => item.categoryName || item.categoryId).filter(Boolean))
-      .size,
-)
+const categoryNameById = computed(() => {
+  const names = new Map()
+
+  for (const category of categories.value) {
+    names.set(String(category.id), category.name)
+  }
+
+  return names
+})
+const categoryCount = computed(() => {
+  const activeCategoryIds = new Set(activeItems.value.map((item) => item.categoryId).filter(Boolean))
+  return categories.value.filter((category) => activeCategoryIds.has(category.id)).length
+})
 const topStockItems = computed(() =>
   [...activeItems.value].sort((a, b) => Number(b.stock || 0) - Number(a.stock || 0)).slice(0, 5),
 )
@@ -99,15 +108,22 @@ function transactionTypeLabel(type) {
   return String(type || '').toUpperCase() === 'IN' ? 'Masuk' : 'Keluar'
 }
 
+function categoryLabel(item) {
+  if (!item.categoryId) return 'Tanpa kategori'
+  return categoryNameById.value.get(String(item.categoryId)) || `Kategori ${item.categoryId}`
+}
+
 onMounted(async () => {
   try {
-    const [summaryData, itemData, transactionData] = await Promise.all([
+    const [summaryData, itemData, categoryData, transactionData] = await Promise.all([
       analyticsApi.summary(),
       itemApi.list(),
+      categoryApi.list(),
       transactionApi.history(),
     ])
     summary.value = summaryData
     items.value = itemData
+    categories.value = categoryData
     transactions.value = transactionData
   } catch (err) {
     error.value = err.message
@@ -261,7 +277,7 @@ onMounted(async () => {
           <div v-for="item in topStockItems" :key="item.id" class="ranking-row">
             <div>
               <strong>{{ item.name }}</strong>
-              <span class="muted">{{ item.categoryName || 'Tanpa kategori' }}</span>
+              <span class="muted">{{ categoryLabel(item) }}</span>
             </div>
             <div class="ranking-meter">
               <span
