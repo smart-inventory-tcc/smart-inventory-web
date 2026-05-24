@@ -16,4 +16,3 @@ health_check:
   timeout_sec: 4
   unhealthy_threshold: 3
   healthy_threshold: 2
-  path: "/"
