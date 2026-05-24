@@ -26,10 +26,10 @@ Di Google Cloud Console:
 3. Create trigger:
    - Event: Push to branch
    - Branch: `^main$`
-   - Included files: `smart-inventory-web/**`
+   - Included files: kosongkan, atau isi `**`
    - Configuration type: Cloud Build configuration file
    - Location: Repository
-   - Cloud Build config file location: `smart-inventory-web/cloudbuild.yaml`
+   - Cloud Build config file location: `cloudbuild.yaml`
 4. Tambahkan substitution variables:
 
 ```text

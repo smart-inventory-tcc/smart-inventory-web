@@ -9,7 +9,6 @@ substitutions:
 steps:
   - id: Build web image
     name: gcr.io/cloud-builders/docker
-    dir: smart-inventory-web
     args:
       - build
       - --tag
