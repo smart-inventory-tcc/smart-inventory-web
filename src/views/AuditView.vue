@@ -1,9 +1,10 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import { transactionApi, itemApi } from '@/services/api'
+import { transactionApi, itemApi, userApi } from '@/services/api'
 
 const transactions = ref([])
 const items = ref([])
+const users = ref([])
 const error = ref('')
 const currentPage = ref(1)
 const pageSize = 25
@@ -12,6 +13,14 @@ const itemsMap = computed(() => {
   const map = {}
   for (const item of items.value) {
     map[item.id] = item
+  }
+  return map
+})
+
+const usersMap = computed(() => {
+  const map = {}
+  for (const user of users.value) {
+    map[user.id] = user
   }
   return map
 })
@@ -33,14 +42,20 @@ function getBarcode(itemId) {
   return itemsMap.value[itemId]?.barcode || '-'
 }
 
+function getUsername(userId) {
+  return usersMap.value[userId]?.username || userId
+}
+
 async function loadData() {
   try {
-    const [txData, itemData] = await Promise.all([
+    const [txData, itemData, userData] = await Promise.all([
       transactionApi.history(),
-      itemApi.list()
+      itemApi.list(),
+      userApi.list()
     ])
     transactions.value = txData
     items.value = itemData
+    users.value = userData
   } catch (err) {
     error.value = err.message
   }
@@ -113,7 +128,7 @@ onMounted(loadData)
             <tr v-for="transaction in paginatedTransactions" :key="transaction.id">
               <td>#{{ transaction.id }}</td>
               <td>{{ getBarcode(transaction.itemId) }}</td>
-              <td>{{ transaction.userName || transaction.userId }}</td>
+              <td>{{ getUsername(transaction.userId) }}</td>
               <td>
                 <span :class="['badge', transaction.type.toLowerCase()]">{{ transaction.type }}</span>
               </td>
