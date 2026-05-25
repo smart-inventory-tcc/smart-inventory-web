@@ -16,14 +16,7 @@ const appShellStyle = computed(() => ({
   gridTemplateColumns: sidebar.isOpen ? '280px 1fr' : '80px 1fr'
 }))
 
-// Initialize real-time notification listener when authenticated
-onMounted(() => {
-  if (auth.isAuthenticated) {
-    startNotificationListener()
-  }
-})
-
-// Watch for authentication changes
+// Watch for authentication changes and start listener immediately if authenticated
 watch(
   () => auth.isAuthenticated,
   (isAuthenticated) => {
@@ -32,7 +25,8 @@ watch(
     } else {
       stopNotificationListener()
     }
-  }
+  },
+  { immediate: true }
 )
 
 // Cleanup on unmount
