@@ -67,7 +67,22 @@ export async function markNotificationAsRead(notificationId) {
 
 function playNotificationSound() {
   try {
-    // Create a simple beep sound using Web Audio API
+    // Play audio file from public/sounds/ directory
+    const audio = new Audio('/sounds/notification.mp3')
+    audio.volume = 0.5
+    audio.play().catch(err => {
+      console.warn('Could not play notification sound:', err)
+      // Fallback to beep if audio file not found
+      playBeepSound()
+    })
+  } catch (error) {
+    console.warn('Could not play notification sound:', error)
+  }
+}
+
+function playBeepSound() {
+  try {
+    // Fallback: Create a simple beep sound using Web Audio API
     const audioContext = new (window.AudioContext || window.webkitAudioContext)()
     const oscillator = audioContext.createOscillator()
     const gainNode = audioContext.createGain()
@@ -84,6 +99,6 @@ function playNotificationSound() {
     oscillator.start(audioContext.currentTime)
     oscillator.stop(audioContext.currentTime + 0.5)
   } catch (error) {
-    console.warn('Could not play notification sound:', error)
+    console.warn('Could not play fallback beep sound:', error)
   }
 }
