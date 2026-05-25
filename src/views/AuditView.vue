@@ -1,11 +1,20 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import { transactionApi } from '@/services/api'
+import { transactionApi, itemApi } from '@/services/api'
 
 const transactions = ref([])
+const items = ref([])
 const error = ref('')
 const currentPage = ref(1)
 const pageSize = 25
+
+const itemsMap = computed(() => {
+  const map = {}
+  for (const item of items.value) {
+    map[item.id] = item
+  }
+  return map
+})
 
 const pageCount = computed(() => Math.max(1, Math.ceil(transactions.value.length / pageSize)))
 const paginatedTransactions = computed(() => {
@@ -20,9 +29,18 @@ const pageRangeText = computed(() => {
   return `${start}-${end} dari ${transactions.value.length} catatan`
 })
 
+function getBarcode(itemId) {
+  return itemsMap.value[itemId]?.barcode || '-'
+}
+
 async function loadData() {
   try {
-    transactions.value = await transactionApi.history()
+    const [txData, itemData] = await Promise.all([
+      transactionApi.history(),
+      itemApi.list()
+    ])
+    transactions.value = txData
+    items.value = itemData
   } catch (err) {
     error.value = err.message
   }
@@ -84,7 +102,7 @@ onMounted(loadData)
           <thead>
             <tr>
               <th>ID</th>
-              <th>Barang</th>
+              <th>Barcode Barang</th>
               <th>User</th>
               <th>Tipe</th>
               <th>Jumlah</th>
@@ -94,7 +112,7 @@ onMounted(loadData)
           <tbody>
             <tr v-for="transaction in paginatedTransactions" :key="transaction.id">
               <td>#{{ transaction.id }}</td>
-              <td>{{ transaction.itemName || transaction.itemId }}</td>
+              <td>{{ getBarcode(transaction.itemId) }}</td>
               <td>{{ transaction.userName || transaction.userId }}</td>
               <td>
                 <span :class="['badge', transaction.type.toLowerCase()]">{{ transaction.type }}</span>
