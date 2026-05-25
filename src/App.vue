@@ -1,9 +1,11 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, watch } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useSidebarStore } from '@/stores/sidebar'
 import AppSidebar from '@/components/AppSidebar.vue'
+import NotificationAlert from '@/components/NotificationAlert.vue'
+import { startNotificationListener, stopNotificationListener } from '@/services/notification'
 
 const auth = useAuthStore()
 const sidebar = useSidebarStore()
@@ -13,9 +15,34 @@ const shouldShowPublicRoute = computed(() => !route.meta.requiresAuth)
 const appShellStyle = computed(() => ({
   gridTemplateColumns: sidebar.isOpen ? '280px 1fr' : '80px 1fr'
 }))
+
+// Initialize real-time notification listener when authenticated
+onMounted(() => {
+  if (auth.isAuthenticated) {
+    startNotificationListener()
+  }
+})
+
+// Watch for authentication changes
+watch(
+  () => auth.isAuthenticated,
+  (isAuthenticated) => {
+    if (isAuthenticated) {
+      startNotificationListener()
+    } else {
+      stopNotificationListener()
+    }
+  }
+)
+
+// Cleanup on unmount
+onUnmounted(() => {
+  stopNotificationListener()
+})
 </script>
 
 <template>
+  <NotificationAlert />
   <main v-if="shouldShowShell" class="app-shell" :style="appShellStyle">
     <AppSidebar />
     <section class="content">
